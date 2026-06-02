@@ -162,12 +162,20 @@ def create_dashboard():
     # ROW 1: KPIs
     add_row("Overview KPIs")
     panels.append(create_stat("Requests (Total)", "sum(rate(gateway_events_ingested_total[30s]))", 0, 4, "blue", "reqps"))
-    panels.append(create_gauge("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 4, 4, 4, "green", "percent"))
+    panels.append(create_stat("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 4, 4, "green", "percent"))
     panels.append(create_stat("Active Connections", "gateway_active_connections", 8, 4, "purple"))
-    panels.append(create_bargauge("Kafka Lag", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 12, 4, 4, "orange"))
-    panels.append(create_gauge("WebSocket Clients", "query_websocket_connections_active", 16, 4, 4, "blue", "none"))
-    panels.append(create_bargauge("Redis Memory", "redis_memory_used_bytes", 20, 4, 4, "red", "bytes"))
+    panels.append(create_stat("Kafka Lag", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 12, 4, "orange"))
+    panels.append(create_stat("WebSocket Clients", "query_websocket_connections_active", 16, 4, "dark-blue"))
+    panels.append(create_stat("Redis Memory", "redis_memory_used_bytes", 20, 4, "red", "bytes"))
     y_pos += 4
+
+    # ROW 2: Advanced Visualizations
+    add_row("System Saturation & Limits")
+    panels.append(create_gauge("Gateway Load Saturation", "gateway_active_connections / 1000 * 100", 0, 6, 6, "red", "percent"))
+    panels.append(create_bargauge("Kafka Backpressure", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 6, 6, 6, "orange", "none"))
+    panels.append(create_gauge("Memory Utilization", "redis_memory_used_bytes / (1024*1024*1024) * 100", 12, 6, 6, "green", "percent"))
+    panels.append(create_bargauge("WebSocket Saturation", "query_websocket_connections_active / 5000 * 100", 18, 6, 6, "blue", "percent"))
+    y_pos += 6
 
     # ROW 2: HTTP Ingress
     add_row("HTTP Requests & Traffic")
