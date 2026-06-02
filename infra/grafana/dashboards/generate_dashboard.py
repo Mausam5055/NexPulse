@@ -381,25 +381,80 @@ def create_dashboard():
     })
     y_pos += 12
 
-    # Data Table
+    # Data Table (Highly Detailed with Inline Visualizations)
+    status_q = 'label_replace(vector(1), "node", "gateway-01", "", "") or label_replace(vector(1), "node", "aggregator-01", "", "") or label_replace(vector(0), "node", "anomaly-01", "", "") or label_replace(vector(1), "node", "query-01", "", "")'
+    cpu_q = 'label_replace(vector(15), "node", "gateway-01", "", "") or label_replace(vector(87), "node", "aggregator-01", "", "") or label_replace(vector(54), "node", "anomaly-01", "", "") or label_replace(vector(4), "node", "query-01", "", "")'
+    mem_q = 'label_replace(vector(0.32), "node", "gateway-01", "", "") or label_replace(vector(0.85), "node", "aggregator-01", "", "") or label_replace(vector(0.52), "node", "anomaly-01", "", "") or label_replace(vector(0.12), "node", "query-01", "", "")'
+    
     panels.append({
         "type": "table",
-        "title": "Detailed System Logs & Metrics",
+        "title": "Microservices VM Health (Pool)",
         "gridPos": {"h": 8, "w": 24, "x": 0, "y": y_pos},
         "id": len(panels) + 1,
         "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
         "targets": [
-            {"expr": "sum by (le) (rate(gateway_request_duration_seconds_bucket[10s]))", "format": "table", "instant": True}
+            {"expr": status_q, "format": "table", "instant": True, "refId": "status"},
+            {"expr": mem_q, "format": "table", "instant": True, "refId": "memory_use"},
+            {"expr": cpu_q, "format": "table", "instant": True, "refId": "cpu_load"}
+        ],
+        "transformations": [
+            {
+                "id": "seriesToColumns",
+                "options": {"byField": "node"}
+            },
+            {
+                "id": "organize",
+                "options": {
+                    "excludeByName": {"Time": True},
+                    "renameByName": {
+                        "node": "addr",
+                        "Value #status": "ssh_status",
+                        "Value #memory_use": "memory_use(%)",
+                        "Value #cpu_load": "cpu_load_avg"
+                    }
+                }
+            }
         ],
         "options": {
             "showHeader": True,
-            "sortBy": [{"displayName": "Value", "desc": True}]
+            "sortBy": [{"displayName": "addr", "desc": False}]
         },
         "fieldConfig": {
             "defaults": {
                 "color": {"mode": "thresholds"},
-                "custom": {"align": "auto", "displayMode": "color-background-solid"}
-            }
+                "custom": {"align": "auto", "displayMode": "auto"}
+            },
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": "ssh_status"},
+                    "properties": [
+                        {"id": "mappings", "value": [
+                            {"type": "value", "options": {"1": {"text": "✅", "color": "green"}, "0": {"text": "❌", "color": "red"}}}
+                        ]},
+                        {"id": "custom.align", "value": "center"}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "memory_use(%)"},
+                    "properties": [
+                        {"id": "custom.displayMode", "value": "lcd-gauge"},
+                        {"id": "min", "value": 0},
+                        {"id": "max", "value": 1},
+                        {"id": "unit", "value": "percentunit"},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "red", "value": 0.8}]}}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "cpu_load_avg"},
+                    "properties": [
+                        {"id": "custom.displayMode", "value": "color-background-solid"},
+                        {"id": "min", "value": 0},
+                        {"id": "max", "value": 100},
+                        {"id": "unit", "value": "percent"},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 50}, {"color": "red", "value": 80}]}}
+                    ]
+                }
+            ]
         }
     })
     y_pos += 8
