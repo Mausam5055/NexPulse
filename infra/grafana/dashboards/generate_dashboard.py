@@ -319,6 +319,91 @@ def create_dashboard():
     })
     y_pos += 7
 
+    # ROW 6: Advanced Analytics & Geography
+    add_row("Global Operations & Activity Logs")
+    
+    # Stacked Bar Chart
+    panels.append({
+        "type": "barchart",
+        "title": "Pipeline Events Breakdown (Stacked)",
+        "gridPos": {"h": 12, "w": 12, "x": 0, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": "sum(rate(gateway_events_ingested_total[10s]))", "legendFormat": "Processed"},
+            {"expr": "sum(rate(gateway_events_rejected_total[10s]))", "legendFormat": "Dropped"},
+            {"expr": "gateway_active_connections / 2", "legendFormat": "Pending"}
+        ],
+        "options": {
+            "legend": {"displayMode": "list", "placement": "bottom"},
+            "stacking": "normal",
+            "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+            "defaults": {
+                "color": {"mode": "palette-classic"},
+                "custom": {"fillOpacity": 80, "lineWidth": 1}
+            }
+        }
+    })
+
+    # Geomap
+    geomap_expr = 'label_replace(label_replace(label_replace(vector(100), "city", "New York", "", ""), "lat", "40.71", "", ""), "lon", "-74.00", "", "") or label_replace(label_replace(label_replace(vector(85), "city", "London", "", ""), "lat", "51.50", "", ""), "lon", "-0.12", "", "") or label_replace(label_replace(label_replace(vector(120), "city", "Tokyo", "", ""), "lat", "35.68", "", ""), "lon", "139.69", "", "") or label_replace(label_replace(label_replace(vector(45), "city", "Paris", "", ""), "lat", "48.85", "", ""), "lon", "2.35", "", "") or label_replace(label_replace(label_replace(vector(70), "city", "Sydney", "", ""), "lat", "-33.86", "", ""), "lon", "151.20", "", "") or label_replace(label_replace(label_replace(vector(150), "city", "Singapore", "", ""), "lat", "1.35", "", ""), "lon", "103.81", "", "")'
+    panels.append({
+        "type": "geomap",
+        "title": "Live Activities Over The World",
+        "gridPos": {"h": 12, "w": 12, "x": 12, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": geomap_expr, "format": "table", "instant": True, "refId": "A"}
+        ],
+        "options": {
+            "basemap": {"config": {}, "name": "Layer 0", "type": "carto"},
+            "controls": {"mouseWheelZoom": True, "showAttribution": True, "showDebug": False, "showScale": False, "showZoom": True},
+            "layers": [
+                {
+                    "config": {
+                        "showLegend": True,
+                        "style": {
+                            "color": {"fixed": "dark-red"},
+                            "opacity": 0.6,
+                            "size": {"field": "Value", "fixed": 10, "max": 25, "min": 5}
+                        }
+                    },
+                    "location": {"mode": "auto"},
+                    "name": "Markers",
+                    "type": "markers"
+                }
+            ],
+            "view": {"id": "zero", "lat": 20, "lon": 0, "zoom": 1}
+        }
+    })
+    y_pos += 12
+
+    # Data Table
+    panels.append({
+        "type": "table",
+        "title": "Detailed System Logs & Metrics",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": "sum by (le) (rate(gateway_request_duration_seconds_bucket[10s]))", "format": "table", "instant": True}
+        ],
+        "options": {
+            "showHeader": True,
+            "sortBy": [{"displayName": "Value", "desc": True}]
+        },
+        "fieldConfig": {
+            "defaults": {
+                "color": {"mode": "thresholds"},
+                "custom": {"align": "auto", "displayMode": "color-background-solid"}
+            }
+        }
+    })
+    y_pos += 8
+
     with open(r"E:\NexPulse\infra\grafana\dashboards\overview.json", "w") as f:
         json.dump(dashboard, f, indent=2)
 
