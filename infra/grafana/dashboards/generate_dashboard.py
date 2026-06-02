@@ -208,7 +208,7 @@ def create_dashboard():
             "options": {
                 "reduceOptions": {"calcs": ["lastNotNull"]},
                 "orientation": "horizontal",
-                "displayMode": "basic",
+                "displayMode": "lcd",
                 "showUnfilled": True
             },
             "fieldConfig": {
