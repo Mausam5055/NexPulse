@@ -195,152 +195,6 @@ def create_dashboard():
     y_pos += 8
 
     # ROW 7: Web Vitals & Page Performance
-    add_row("Frontend Web Vitals & API Analytics")
-    
-    # Page Loads & Errors Bar Chart
-    panels.append({
-        "type": "barchart",
-        "title": "Page Loads & Errors",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": y_pos},
-        "id": len(panels) + 1,
-        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
-        "targets": [
-            {"expr": "sum(rate(gateway_events_ingested_total[10s])) * 15", "legendFormat": "Page Loads", "refId": "A"},
-            {"expr": "sum(rate(gateway_events_rejected_total[10s]))", "legendFormat": "Errors", "refId": "B"}
-        ],
-        "options": {
-            "legend": {"displayMode": "list", "placement": "bottom"},
-            "stacking": "normal",
-            "tooltip": {"mode": "multi"}
-        },
-        "fieldConfig": {
-            "defaults": {
-                "color": {"mode": "palette-classic"},
-                "custom": {"fillOpacity": 100, "lineWidth": 0}
-            },
-            "overrides": [
-                {
-                    "matcher": {"id": "byName", "options": "Page Loads"},
-                    "properties": [{"id": "color", "value": {"fixedColor": "#3274D9", "mode": "fixed"}}]
-                },
-                {
-                    "matcher": {"id": "byName", "options": "Errors"},
-                    "properties": [{"id": "color", "value": {"fixedColor": "#E02F44", "mode": "fixed"}}]
-                }
-            ]
-        }
-    })
-
-    api_traffic_expr = 'label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.4, "api", "/api/v1/checkout", "", "") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.35, "api", "/api/v1/cart", "", "") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.25, "api", "/api/v1/product", "", "")'
-    panels.append({
-        "type": "timeseries",
-        "title": "Individual API Endpoint Traffic",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": y_pos},
-        "id": len(panels) + 1,
-        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
-        "targets": [
-            {"expr": api_traffic_expr, "legendFormat": "{{api}}", "refId": "A"}
-        ],
-        "options": {
-            "legend": {"displayMode": "table", "placement": "right"},
-            "tooltip": {"mode": "multi"}
-        },
-        "fieldConfig": {
-            "defaults": {
-                "custom": {
-                    "drawStyle": "line",
-                    "fillOpacity": 20,
-                    "lineWidth": 2,
-                    "gradientMode": "opacity"
-                },
-                "color": {"mode": "palette-classic"}
-            }
-        }
-    })
-    y_pos += 8
-
-    # Page Performance Table
-    ttfb = 'label_replace(vector(1498), "page", "app_checkout_success", "", "") or label_replace(vector(3644), "page", "cart", "", "") or label_replace(vector(828), "page", "home", "", "") or label_replace(vector(2781), "page", "product_detail", "", "")'
-    fcp = 'label_replace(vector(5.79), "page", "app_checkout_success", "", "") or label_replace(vector(8.36), "page", "cart", "", "") or label_replace(vector(7.14), "page", "home", "", "") or label_replace(vector(7.88), "page", "product_detail", "", "")'
-    cls = 'label_replace(vector(0.00), "page", "app_checkout_success", "", "") or label_replace(vector(0.00), "page", "cart", "", "") or label_replace(vector(0.00), "page", "home", "", "") or label_replace(vector(0.05), "page", "product_detail", "", "")'
-    fid = 'label_replace(vector(0), "page", "app_checkout_success", "", "") or label_replace(vector(52), "page", "cart", "", "") or label_replace(vector(317), "page", "home", "", "") or label_replace(vector(187), "page", "product_detail", "", "")'
-    
-    panels.append({
-        "type": "table",
-        "title": "Page Performance (Web Vitals)",
-        "gridPos": {"h": 10, "w": 24, "x": 0, "y": y_pos},
-        "id": len(panels) + 1,
-        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
-        "targets": [
-            {"expr": ttfb, "format": "table", "instant": True, "refId": "ttfb"},
-            {"expr": fcp, "format": "table", "instant": True, "refId": "fcp"},
-            {"expr": cls, "format": "table", "instant": True, "refId": "cls"},
-            {"expr": fid, "format": "table", "instant": True, "refId": "fid"}
-        ],
-        "transformations": [
-            {
-                "id": "seriesToColumns",
-                "options": {"byField": "page"}
-            },
-            {
-                "id": "organize",
-                "options": {
-                    "excludeByName": {"Time": True},
-                    "renameByName": {
-                        "page": "Page ID",
-                        "Value #ttfb": "TTFB",
-                        "Value #fcp": "FCP",
-                        "Value #cls": "CLS",
-                        "Value #fid": "FID"
-                    }
-                }
-            }
-        ],
-        "options": {
-            "showHeader": True,
-            "sortBy": [{"displayName": "Page ID", "desc": False}]
-        },
-        "fieldConfig": {
-            "defaults": {
-                "color": {"mode": "thresholds"},
-                "custom": {"align": "auto", "displayMode": "color-text"}
-            },
-            "overrides": [
-                {
-                    "matcher": {"id": "byName", "options": "TTFB"},
-                    "properties": [
-                        {"id": "unit", "value": "ms"},
-                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 800}, {"color": "red", "value": 2000}]}}
-                    ]
-                },
-                {
-                    "matcher": {"id": "byName", "options": "FCP"},
-                    "properties": [
-                        {"id": "unit", "value": "s"},
-                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 2}, {"color": "red", "value": 5}]}}
-                    ]
-                },
-                {
-                    "matcher": {"id": "byName", "options": "CLS"},
-                    "properties": [
-                        {"id": "custom.displayMode", "value": "lcd-gauge"},
-                        {"id": "min", "value": 0},
-                        {"id": "max", "value": 0.1},
-                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "red", "value": 0.05}]}}
-                    ]
-                },
-                {
-                    "matcher": {"id": "byName", "options": "FID"},
-                    "properties": [
-                        {"id": "unit", "value": "ms"},
-                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 100}, {"color": "red", "value": 250}]}}
-                    ]
-                }
-            ]
-        }
-    })
-    y_pos += 10
-
     # ROW 3: Latency
     add_row("Latency & Performance")
     panels.append(create_timeseries("Latency Percentiles", [
@@ -605,6 +459,154 @@ def create_dashboard():
         }
     })
     y_pos += 8
+
+
+    # ROW 7: Web Vitals & Page Performance
+    add_row("Frontend Web Vitals & API Analytics")
+    
+    # Page Loads & Errors Bar Chart
+    panels.append({
+        "type": "barchart",
+        "title": "Page Loads & Errors",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": "sum(rate(gateway_events_ingested_total[10s])) * 15", "legendFormat": "Page Loads", "refId": "A"},
+            {"expr": "sum(rate(gateway_events_rejected_total[10s]))", "legendFormat": "Errors", "refId": "B"}
+        ],
+        "options": {
+            "legend": {"displayMode": "list", "placement": "bottom"},
+            "stacking": "normal",
+            "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+            "defaults": {
+                "color": {"mode": "palette-classic"},
+                "custom": {"fillOpacity": 100, "lineWidth": 0}
+            },
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": "Page Loads"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "#3274D9", "mode": "fixed"}}]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "Errors"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "#E02F44", "mode": "fixed"}}]
+                }
+            ]
+        }
+    })
+
+    api_traffic_expr = 'label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.4, "api", "/api/v1/checkout", "", "") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.35, "api", "/api/v1/cart", "", "") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.25, "api", "/api/v1/product", "", "")'
+    panels.append({
+        "type": "timeseries",
+        "title": "Individual API Endpoint Traffic",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": api_traffic_expr, "legendFormat": "{{api}}", "refId": "A"}
+        ],
+        "options": {
+            "legend": {"displayMode": "table", "placement": "right"},
+            "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+            "defaults": {
+                "custom": {
+                    "drawStyle": "line",
+                    "fillOpacity": 20,
+                    "lineWidth": 2,
+                    "gradientMode": "opacity"
+                },
+                "color": {"mode": "palette-classic"}
+            }
+        }
+    })
+    y_pos += 8
+
+    # Page Performance Table
+    ttfb = 'label_replace(vector(1498), "page", "app_checkout_success", "", "") or label_replace(vector(3644), "page", "cart", "", "") or label_replace(vector(828), "page", "home", "", "") or label_replace(vector(2781), "page", "product_detail", "", "")'
+    fcp = 'label_replace(vector(5.79), "page", "app_checkout_success", "", "") or label_replace(vector(8.36), "page", "cart", "", "") or label_replace(vector(7.14), "page", "home", "", "") or label_replace(vector(7.88), "page", "product_detail", "", "")'
+    cls = 'label_replace(vector(0.00), "page", "app_checkout_success", "", "") or label_replace(vector(0.00), "page", "cart", "", "") or label_replace(vector(0.00), "page", "home", "", "") or label_replace(vector(0.05), "page", "product_detail", "", "")'
+    fid = 'label_replace(vector(0), "page", "app_checkout_success", "", "") or label_replace(vector(52), "page", "cart", "", "") or label_replace(vector(317), "page", "home", "", "") or label_replace(vector(187), "page", "product_detail", "", "")'
+    
+    panels.append({
+        "type": "table",
+        "title": "Page Performance (Web Vitals)",
+        "gridPos": {"h": 10, "w": 24, "x": 0, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": ttfb, "format": "table", "instant": True, "refId": "ttfb"},
+            {"expr": fcp, "format": "table", "instant": True, "refId": "fcp"},
+            {"expr": cls, "format": "table", "instant": True, "refId": "cls"},
+            {"expr": fid, "format": "table", "instant": True, "refId": "fid"}
+        ],
+        "transformations": [
+            {
+                "id": "seriesToColumns",
+                "options": {"byField": "page"}
+            },
+            {
+                "id": "organize",
+                "options": {
+                    "excludeByName": {"Time": True},
+                    "renameByName": {
+                        "page": "Page ID",
+                        "Value #ttfb": "TTFB",
+                        "Value #fcp": "FCP",
+                        "Value #cls": "CLS",
+                        "Value #fid": "FID"
+                    }
+                }
+            }
+        ],
+        "options": {
+            "showHeader": True,
+            "sortBy": [{"displayName": "Page ID", "desc": False}]
+        },
+        "fieldConfig": {
+            "defaults": {
+                "color": {"mode": "thresholds"},
+                "custom": {"align": "auto", "displayMode": "color-text"}
+            },
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": "TTFB"},
+                    "properties": [
+                        {"id": "unit", "value": "ms"},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 800}, {"color": "red", "value": 2000}]}}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "FCP"},
+                    "properties": [
+                        {"id": "unit", "value": "s"},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 2}, {"color": "red", "value": 5}]}}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "CLS"},
+                    "properties": [
+                        {"id": "custom.displayMode", "value": "lcd-gauge"},
+                        {"id": "min", "value": 0},
+                        {"id": "max", "value": 0.1},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "red", "value": 0.05}]}}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "FID"},
+                    "properties": [
+                        {"id": "unit", "value": "ms"},
+                        {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 100}, {"color": "red", "value": 250}]}}
+                    ]
+                }
+            ]
+        }
+    })
+    y_pos += 10
 
     with open(r"E:\NexPulse\infra\grafana\dashboards\overview.json", "w") as f:
         json.dump(dashboard, f, indent=2)
