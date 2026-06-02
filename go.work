@@ -1,0 +1,9 @@
+go 1.25.0
+
+use (
+	./services/aggregator
+	./services/anomaly
+	./services/gateway
+	./services/query
+	./tools/simulator
+)

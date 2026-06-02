@@ -1,0 +1,88 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "liveNow": true,
+  "panels": [
+    {
+      "id": 1, "type": "timeseries", "title": "🦫 Live Goroutine Count (All Services)",
+      "description": "Each goroutine costs only ~8KB. Node.js has 1 thread total.",
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "go_goroutines{job=\"nexpulse-gateway\"}", "legendFormat": "Gateway", "refId": "A"},
+        {"expr": "go_goroutines{job=\"nexpulse-aggregator\"}", "legendFormat": "Aggregator", "refId": "B"},
+        {"expr": "go_goroutines{job=\"nexpulse-anomaly\"}", "legendFormat": "Anomaly Detector", "refId": "C"},
+        {"expr": "go_goroutines{job=\"nexpulse-query\"}", "legendFormat": "Query/WebSocket", "refId": "D"}
+      ],
+      "options": {"tooltip": {"mode": "multi", "sort": "desc"}, "legend": {"calcs": ["mean", "max", "last"], "displayMode": "table", "placement": "bottom"}, "fillOpacity": 12},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 12, "gradientMode": "opacity", "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 2, "type": "stat", "title": "Query Service Goroutines",
+      "description": "≈ 1 goroutine per WebSocket client",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 9},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "go_goroutines{job=\"nexpulse-query\"}", "legendFormat": "goroutines", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "green", "mode": "fixed"}, "unit": "short", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 3, "type": "stat", "title": "Aggregator Goroutines",
+      "description": "6 Kafka partition consumers",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 9},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "go_goroutines{job=\"nexpulse-aggregator\"}", "legendFormat": "goroutines", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "blue", "mode": "fixed"}, "unit": "short", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "🧠 Heap Memory (All Services)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 9},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "go_memstats_heap_inuse_bytes{job=\"nexpulse-gateway\"}", "legendFormat": "Gateway Heap", "refId": "A"},
+        {"expr": "go_memstats_heap_inuse_bytes{job=\"nexpulse-aggregator\"}", "legendFormat": "Aggregator Heap", "refId": "B"},
+        {"expr": "go_memstats_heap_inuse_bytes{job=\"nexpulse-query\"}", "legendFormat": "Query Heap", "refId": "C"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["last"], "displayMode": "table", "placement": "bottom"}, "fillOpacity": 10},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 10, "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "bytes"}, "overrides": []}
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "🗑️ GC Pause Duration (p99)",
+      "description": "Go's GC is designed to keep pauses under 1ms",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 17},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "histogram_quantile(0.99, rate(go_gc_duration_seconds_bucket{job=\"nexpulse-gateway\"}[1m]))", "legendFormat": "Gateway GC p99", "refId": "A"},
+        {"expr": "histogram_quantile(0.99, rate(go_gc_duration_seconds_bucket{job=\"nexpulse-aggregator\"}[1m]))", "legendFormat": "Aggregator GC p99", "refId": "B"},
+        {"expr": "histogram_quantile(0.99, rate(go_gc_duration_seconds_bucket{job=\"nexpulse-query\"}[1m]))", "legendFormat": "Query GC p99", "refId": "C"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "s"}, "overrides": []}
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "📦 Allocated Objects / Second",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 17},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "rate(go_memstats_mallocs_total{job=\"nexpulse-gateway\"}[30s])", "legendFormat": "Gateway allocs/sec", "refId": "A"},
+        {"expr": "rate(go_memstats_mallocs_total{job=\"nexpulse-aggregator\"}[30s])", "legendFormat": "Aggregator allocs/sec", "refId": "B"},
+        {"expr": "rate(go_memstats_mallocs_total{job=\"nexpulse-query\"}[30s])", "legendFormat": "Query allocs/sec", "refId": "C"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 10, "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "short"}, "overrides": []}
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "tags": ["nexpulse", "go"],
+  "templating": {"list": []},
+  "time": {"from": "now-5m", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "🦫 Go Runtime & Goroutines",
+  "uid": "nexpulse-go-runtime",
+  "version": 1
+}

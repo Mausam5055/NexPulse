@@ -1,0 +1,135 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "liveNow": true,
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "⚡ Ops / Second",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_instantaneous_ops_per_sec", "legendFormat": "ops/sec", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "orange", "mode": "fixed"}, "unit": "short", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "orange", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 2, "type": "gauge", "title": "🎯 Cache Hit Rate %",
+      "description": "99%+ means Redis is serving from memory. Near 100% = perfect.",
+      "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "100 * redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total + 0.001)", "legendFormat": "hit rate", "refId": "A"}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "showThresholdLabels": false, "showThresholdMarkers": true},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "min": 0, "max": 100, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 80}, {"color": "green", "value": 95}]}, "unit": "percent", "decimals": 2}, "overrides": []}
+    },
+    {
+      "id": 3, "type": "stat", "title": "💾 Memory Used",
+      "gridPos": {"h": 4, "w": 4, "x": 9, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_memory_used_bytes", "legendFormat": "memory", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "blue", "mode": "fixed"}, "unit": "bytes", "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 4, "type": "stat", "title": "🔗 Connected Clients",
+      "gridPos": {"h": 4, "w": 4, "x": 13, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_connected_clients", "legendFormat": "clients", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "purple", "mode": "fixed"}, "unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "purple", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 5, "type": "stat", "title": "🔑 Total Keys",
+      "gridPos": {"h": 4, "w": 4, "x": 17, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_db_keys{db=\"db0\"}", "legendFormat": "keys", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "green", "mode": "fixed"}, "unit": "short", "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 6, "type": "stat", "title": "📢 Pub/Sub Channels",
+      "gridPos": {"h": 4, "w": 3, "x": 21, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_pubsub_channels", "legendFormat": "channels", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}, "textMode": "value_and_name"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "yellow", "mode": "fixed"}, "unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "⚡ Redis Ops/sec Timeline",
+      "gridPos": {"h": 8, "w": 16, "x": 0, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [{"expr": "redis_instantaneous_ops_per_sec", "legendFormat": "Ops/sec", "refId": "A"}],
+      "options": {"tooltip": {"mode": "single"}, "legend": {"calcs": ["mean", "max", "last"], "displayMode": "table", "placement": "bottom"}, "fillOpacity": 25},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "orange", "mode": "fixed"}, "custom": {"fillOpacity": 25, "gradientMode": "opacity", "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "💾 Memory Timeline",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "redis_memory_used_bytes", "legendFormat": "Used", "refId": "A"},
+        {"expr": "redis_used_memory_peak_bytes", "legendFormat": "Peak", "refId": "B"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["last"], "displayMode": "table", "placement": "bottom"}, "fillOpacity": 10},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 10, "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "bytes"}, "overrides": []}
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "🎯 Keyspace Hits vs Misses",
+      "description": "Hits should vastly outnumber misses — shows caching efficiency",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "rate(redis_keyspace_hits_total[30s])", "legendFormat": "Hits/sec ✅", "refId": "A"},
+        {"expr": "rate(redis_keyspace_misses_total[30s])", "legendFormat": "Misses/sec ❌", "refId": "B"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}, "fillOpacity": 15},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"fillOpacity": 15, "lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "short"}, "overrides": [{"matcher": {"id": "byName", "options": "Misses/sec ❌"}, "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]}]}
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "📢 Pub/Sub Messages/sec",
+      "description": "Dashboard updates published through Redis Pub/Sub",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "rate(redis_commands_duration_seconds_count{cmd=\"publish\"}[30s])", "legendFormat": "PUBLISH/sec", "refId": "A"},
+        {"expr": "rate(redis_commands_duration_seconds_count{cmd=\"subscribe\"}[30s])", "legendFormat": "SUBSCRIBE ops/sec", "refId": "B"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "last"], "displayMode": "table", "placement": "bottom"}},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "short"}, "overrides": []}
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "🏆 ZADD / ZINCRBY Latency (Sorted Sets = Leaderboard)",
+      "description": "O(log N) per update. This powers the live leaderboard.",
+      "gridPos": {"h": 7, "w": 12, "x": 0, "y": 20},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "rate(redis_commands_duration_seconds_sum{cmd=\"zadd\"}[30s]) / rate(redis_commands_duration_seconds_count{cmd=\"zadd\"}[30s])", "legendFormat": "ZADD avg latency", "refId": "A"},
+        {"expr": "rate(redis_commands_duration_seconds_sum{cmd=\"zincrby\"}[30s]) / rate(redis_commands_duration_seconds_count{cmd=\"zincrby\"}[30s])", "legendFormat": "ZINCRBY avg latency", "refId": "B"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "s"}, "overrides": []}
+    },
+    {
+      "id": 12, "type": "timeseries", "title": "🧮 PFADD Latency (HyperLogLog = Unique Users)",
+      "description": "12KB RAM to count millions of unique users. PFADD is O(1).",
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 20},
+      "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+      "targets": [
+        {"expr": "rate(redis_commands_duration_seconds_sum{cmd=\"pfadd\"}[30s]) / rate(redis_commands_duration_seconds_count{cmd=\"pfadd\"}[30s])", "legendFormat": "PFADD avg latency", "refId": "A"},
+        {"expr": "rate(redis_commands_duration_seconds_sum{cmd=\"pfcount\"}[30s]) / rate(redis_commands_duration_seconds_count{cmd=\"pfcount\"}[30s])", "legendFormat": "PFCOUNT avg latency", "refId": "B"}
+      ],
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"lineWidth": 2, "spanNulls": true, "showPoints": "never"}, "unit": "s"}, "overrides": []}
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "tags": ["nexpulse", "redis"],
+  "templating": {"list": []},
+  "time": {"from": "now-5m", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "🔴 Redis Deep Dive",
+  "uid": "nexpulse-redis",
+  "version": 1
+}
