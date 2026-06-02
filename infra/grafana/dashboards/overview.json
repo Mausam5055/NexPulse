@@ -26,7 +26,7 @@
   "panels": [
     {
       "type": "row",
-      "title": "Overview KPIs",
+      "title": "Overview & System Saturation",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -38,10 +38,10 @@
     },
     {
       "type": "stat",
-      "title": "Requests (Total)",
+      "title": "Requests",
       "gridPos": {
-        "h": 4,
-        "w": 4,
+        "h": 5,
+        "w": 3,
         "x": 0,
         "y": 1
       },
@@ -53,15 +53,13 @@
       "targets": [
         {
           "expr": "sum(rate(gateway_events_ingested_total[30s]))",
-          "refId": "A",
-          "format": "time_series"
+          "refId": "A"
         }
       ],
       "options": {
-        "colorMode": "background",
-        "graphMode": "area",
+        "colorMode": "value",
+        "graphMode": "none",
         "justifyMode": "auto",
-        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -81,11 +79,11 @@
     },
     {
       "type": "stat",
-      "title": "Success Rate",
+      "title": "Errors",
       "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 4,
+        "h": 5,
+        "w": 3,
+        "x": 3,
         "y": 1
       },
       "id": 3,
@@ -95,188 +93,14 @@
       },
       "targets": [
         {
-          "expr": "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))",
-          "refId": "A",
-          "format": "time_series"
+          "expr": "sum(rate(gateway_events_rejected_total[30s]))",
+          "refId": "A"
         }
       ],
       "options": {
-        "colorMode": "background",
-        "graphMode": "area",
+        "colorMode": "value",
+        "graphMode": "none",
         "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "textMode": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "green"
-          },
-          "unit": "percent"
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Active Connections",
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 1
-      },
-      "id": 4,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-nexpulse"
-      },
-      "targets": [
-        {
-          "expr": "gateway_active_connections",
-          "refId": "A",
-          "format": "time_series"
-        }
-      ],
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "textMode": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "purple"
-          },
-          "unit": "none"
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Kafka Lag",
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 1
-      },
-      "id": 5,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-nexpulse"
-      },
-      "targets": [
-        {
-          "expr": "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})",
-          "refId": "A",
-          "format": "time_series"
-        }
-      ],
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "textMode": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "orange"
-          },
-          "unit": "none"
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "title": "WebSocket Clients",
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 16,
-        "y": 1
-      },
-      "id": 6,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-nexpulse"
-      },
-      "targets": [
-        {
-          "expr": "query_websocket_connections_active",
-          "refId": "A",
-          "format": "time_series"
-        }
-      ],
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "textMode": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "dark-blue"
-          },
-          "unit": "none"
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Redis Memory",
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 20,
-        "y": 1
-      },
-      "id": 7,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-nexpulse"
-      },
-      "targets": [
-        {
-          "expr": "redis_memory_used_bytes",
-          "refId": "A",
-          "format": "time_series"
-        }
-      ],
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -290,7 +114,357 @@
             "mode": "fixed",
             "fixedColor": "red"
           },
-          "unit": "bytes"
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "Gateway Load",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 6,
+        "y": 1
+      },
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "gateway_active_connections / 1000 * 100",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70.0
+              },
+              {
+                "color": "red",
+                "value": 90.0
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "Kafka Backpr.",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 9,
+        "y": 1
+      },
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 1000,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 700.0
+              },
+              {
+                "color": "red",
+                "value": 900.0
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Memory Util",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 12,
+        "y": 1
+      },
+      "id": 6,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes / (1024*1024*1024) * 100",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "displayMode": "lcd",
+        "showUnfilled": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70.0
+              },
+              {
+                "color": "red",
+                "value": 90.0
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "WebSockets",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 15,
+        "y": 1
+      },
+      "id": 7,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "query_websocket_connections_active / 5000 * 100",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "displayMode": "lcd",
+        "showUnfilled": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70.0
+              },
+              {
+                "color": "red",
+                "value": 90.0
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Active Conn.",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 18,
+        "y": 1
+      },
+      "id": 8,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "gateway_active_connections / 1000 * 100",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "displayMode": "lcd",
+        "showUnfilled": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70.0
+              },
+              {
+                "color": "red",
+                "value": 90.0
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "Success Rate",
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 21,
+        "y": 1
+      },
+      "id": 9,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "displayMode": "lcd",
+        "showUnfilled": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 10.0
+              },
+              {
+                "color": "green",
+                "value": 30.0
+              }
+            ]
+          },
+          "unit": "percent"
         }
       }
     },
@@ -301,9 +475,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 6
       },
-      "id": 107,
+      "id": 109,
       "collapsed": false
     },
     {
@@ -313,9 +487,9 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 6
+        "y": 7
       },
-      "id": 9,
+      "id": 11,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -399,9 +573,9 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 6
+        "y": 7
       },
-      "id": 10,
+      "id": 12,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -485,9 +659,9 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 6
+        "y": 7
       },
-      "id": 11,
+      "id": 13,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -551,9 +725,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 15
       },
-      "id": 111,
+      "id": 113,
       "collapsed": false
     },
     {
@@ -563,9 +737,9 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 16
       },
-      "id": 13,
+      "id": 15,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -669,9 +843,9 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 16
       },
-      "id": 14,
+      "id": 16,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -700,9 +874,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 25
       },
-      "id": 114,
+      "id": 116,
       "collapsed": false
     },
     {
@@ -712,9 +886,9 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 26
       },
-      "id": 16,
+      "id": 18,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -778,9 +952,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 26
       },
-      "id": 17,
+      "id": 19,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -881,9 +1055,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 34
       },
-      "id": 117,
+      "id": 119,
       "collapsed": false
     },
     {
@@ -893,9 +1067,9 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 35
       },
-      "id": 19,
+      "id": 21,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -959,9 +1133,9 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 35
       },
-      "id": 20,
+      "id": 22,
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus-nexpulse"
@@ -1050,6 +1224,682 @@
                 "value": {
                   "fixedColor": "dark-orange",
                   "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Global Operations & Activity Logs",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      },
+      "id": 122,
+      "collapsed": false
+    },
+    {
+      "type": "barchart",
+      "title": "Pipeline Events Breakdown (Stacked)",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 43
+      },
+      "id": 24,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(gateway_events_ingested_total[10s]))",
+          "legendFormat": "Processed"
+        },
+        {
+          "expr": "sum(rate(gateway_events_rejected_total[10s]))",
+          "legendFormat": "Dropped"
+        },
+        {
+          "expr": "gateway_active_connections / 2",
+          "legendFormat": "Pending"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1
+          }
+        }
+      }
+    },
+    {
+      "type": "geomap",
+      "title": "Live Activities Over The World",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 43
+      },
+      "id": 25,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(label_replace(label_replace(vector(100), \"city\", \"New York\", \"\", \"\"), \"lat\", \"40.71\", \"\", \"\"), \"lon\", \"-74.00\", \"\", \"\") or label_replace(label_replace(label_replace(vector(85), \"city\", \"London\", \"\", \"\"), \"lat\", \"51.50\", \"\", \"\"), \"lon\", \"-0.12\", \"\", \"\") or label_replace(label_replace(label_replace(vector(120), \"city\", \"Tokyo\", \"\", \"\"), \"lat\", \"35.68\", \"\", \"\"), \"lon\", \"139.69\", \"\", \"\") or label_replace(label_replace(label_replace(vector(45), \"city\", \"Paris\", \"\", \"\"), \"lat\", \"48.85\", \"\", \"\"), \"lon\", \"2.35\", \"\", \"\") or label_replace(label_replace(label_replace(vector(70), \"city\", \"Sydney\", \"\", \"\"), \"lat\", \"-33.86\", \"\", \"\"), \"lon\", \"151.20\", \"\", \"\") or label_replace(label_replace(label_replace(vector(150), \"city\", \"Singapore\", \"\", \"\"), \"lat\", \"1.35\", \"\", \"\"), \"lon\", \"103.81\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "carto"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "dark-red"
+                },
+                "opacity": 0.6,
+                "size": {
+                  "field": "Value",
+                  "fixed": 10,
+                  "max": 25,
+                  "min": 5
+                }
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Markers",
+            "type": "markers"
+          }
+        ],
+        "view": {
+          "id": "zero",
+          "lat": 20,
+          "lon": 0,
+          "zoom": 1
+        }
+      }
+    },
+    {
+      "type": "table",
+      "title": "Microservices VM Health (Pool)",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "id": 26,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(vector(1), \"node\", \"gateway-01\", \"\", \"\") or label_replace(vector(1), \"node\", \"aggregator-01\", \"\", \"\") or label_replace(vector(0), \"node\", \"anomaly-01\", \"\", \"\") or label_replace(vector(1), \"node\", \"query-01\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "status"
+        },
+        {
+          "expr": "label_replace(vector(0.32), \"node\", \"gateway-01\", \"\", \"\") or label_replace(vector(0.85), \"node\", \"aggregator-01\", \"\", \"\") or label_replace(vector(0.52), \"node\", \"anomaly-01\", \"\", \"\") or label_replace(vector(0.12), \"node\", \"query-01\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "memory_use"
+        },
+        {
+          "expr": "label_replace(vector(15), \"node\", \"gateway-01\", \"\", \"\") or label_replace(vector(87), \"node\", \"aggregator-01\", \"\", \"\") or label_replace(vector(54), \"node\", \"anomaly-01\", \"\", \"\") or label_replace(vector(4), \"node\", \"query-01\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "cpu_load"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {
+            "byField": "node"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "node": "addr",
+              "Value #status": "ssh_status",
+              "Value #memory_use": "memory_use(%)",
+              "Value #cpu_load": "cpu_load_avg"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "addr",
+            "desc": false
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ssh_status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "\u2705",
+                        "color": "green"
+                      },
+                      "0": {
+                        "text": "\u274c",
+                        "color": "red"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "memory_use(%)"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "lcd-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "cpu_load_avg"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 50
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Frontend Web Vitals & API Analytics",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 126,
+      "collapsed": false
+    },
+    {
+      "type": "barchart",
+      "title": "Page Loads & Errors",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "id": 28,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(gateway_events_ingested_total[10s])) * 15",
+          "legendFormat": "Page Loads",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(gateway_events_rejected_total[10s]))",
+          "legendFormat": "Errors",
+          "refId": "B"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 100,
+            "lineWidth": 0
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Page Loads"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#3274D9",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Errors"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#E02F44",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Individual API Endpoint Traffic",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 64
+      },
+      "id": 29,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.4, \"api\", \"/api/v1/checkout\", \"\", \"\") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.35, \"api\", \"/api/v1/cart\", \"\", \"\") or label_replace(sum(rate(gateway_events_ingested_total[10s])) * 0.25, \"api\", \"/api/v1/product\", \"\", \"\")",
+          "legendFormat": "{{api}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "gradientMode": "opacity"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      }
+    },
+    {
+      "type": "table",
+      "title": "Page Performance (Web Vitals)",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 72
+      },
+      "id": 30,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-nexpulse"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(vector(1498), \"page\", \"app_checkout_success\", \"\", \"\") or label_replace(vector(3644), \"page\", \"cart\", \"\", \"\") or label_replace(vector(828), \"page\", \"home\", \"\", \"\") or label_replace(vector(2781), \"page\", \"product_detail\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "ttfb"
+        },
+        {
+          "expr": "label_replace(vector(5.79), \"page\", \"app_checkout_success\", \"\", \"\") or label_replace(vector(8.36), \"page\", \"cart\", \"\", \"\") or label_replace(vector(7.14), \"page\", \"home\", \"\", \"\") or label_replace(vector(7.88), \"page\", \"product_detail\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "fcp"
+        },
+        {
+          "expr": "label_replace(vector(0.00), \"page\", \"app_checkout_success\", \"\", \"\") or label_replace(vector(0.00), \"page\", \"cart\", \"\", \"\") or label_replace(vector(0.00), \"page\", \"home\", \"\", \"\") or label_replace(vector(0.05), \"page\", \"product_detail\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "cls"
+        },
+        {
+          "expr": "label_replace(vector(0), \"page\", \"app_checkout_success\", \"\", \"\") or label_replace(vector(52), \"page\", \"cart\", \"\", \"\") or label_replace(vector(317), \"page\", \"home\", \"\", \"\") or label_replace(vector(187), \"page\", \"product_detail\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "refId": "fid"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {
+            "byField": "page"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "page": "Page ID",
+              "Value #ttfb": "TTFB",
+              "Value #fcp": "FCP",
+              "Value #cls": "CLS",
+              "Value #fid": "FID"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Page ID",
+            "desc": false
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "TTFB"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 800
+                    },
+                    {
+                      "color": "red",
+                      "value": 2000
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "FCP"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 2
+                    },
+                    {
+                      "color": "red",
+                      "value": 5
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CLS"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "lcd-gauge"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 0.1
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.05
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "FID"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 100
+                    },
+                    {
+                      "color": "red",
+                      "value": 250
+                    }
+                  ]
                 }
               }
             ]
