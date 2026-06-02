@@ -156,6 +156,12 @@ Open one final terminal to generate synthetic traffic and watch the dashboards c
 | `cd tools/simulator && go run . --rate 10000 --workers 100` | Heavy traffic (~10,000 requests/sec). |
 | `cd tools/simulator && go run . --rate 50000 --workers 500` | **MAX POWER** (~50,000+ requests/sec). |
 
+### 4. View Live Analytics in PowerShell (Optional)
+If you want to feel like a true hacker, you can watch the Redis data aggregate in real-time straight from your terminal without opening Grafana. Run this infinite loop in PowerShell:
+```powershell
+while ($true) { Clear-Host; Write-Host "--- LIVE TOP ENDPOINTS ---" -ForegroundColor Cyan; docker exec nexpulse-redis redis-cli ZREVRANGE leaderboard:endpoints 0 5 WITHSCORES; Start-Sleep -Seconds 1 }
+```
+
 ---
 
 ## 📊 God-Mode Observability
