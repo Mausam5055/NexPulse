@@ -211,10 +211,51 @@ def create_dashboard():
         {"expr": "sum by(reason) (rate(gateway_events_rejected_total[1m]))", "legend": "{{reason}}", "color": "orange"}
     ], 0, 12, 8))
 
-    panels.append(create_timeseries("Aggregator Processing Rate & WebSockets", [
-        {"expr": "rate(aggregator_events_processed_total[1m])", "legend": "Events Processed/sec", "color": "purple"},
-        {"expr": "query_websocket_connections_active", "legend": "WebSockets", "color": "blue"}
-    ], 12, 12, 8))
+    panels.append({
+        "type": "timeseries",
+        "title": "Aggregator Telemetry & Client Subscriptions",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": "rate(aggregator_events_processed_total[10s])", "legendFormat": "Processing Rate", "refId": "A"},
+            {"expr": "query_websocket_connections_active", "legendFormat": "Active WebSockets", "refId": "B"}
+        ],
+        "options": {
+            "legend": {"displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"]},
+            "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+            "defaults": {
+                "custom": {
+                    "drawStyle": "line",
+                    "lineInterpolation": "stepBefore",
+                    "lineWidth": 2,
+                    "fillOpacity": 15,
+                    "gradientMode": "hue",
+                    "showPoints": "auto",
+                    "pointSize": 4
+                },
+                "color": {"mode": "palette-classic"},
+                "unit": "reqps"
+            },
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": "Active WebSockets"},
+                    "properties": [
+                        {"id": "custom.axisPlacement", "value": "right"},
+                        {"id": "custom.drawStyle", "value": "line"},
+                        {"id": "custom.lineInterpolation", "value": "smooth"},
+                        {"id": "custom.lineWidth", "value": 3},
+                        {"id": "custom.fillOpacity", "value": 10},
+                        {"id": "custom.gradientMode", "value": "opacity"},
+                        {"id": "unit", "value": "none"},
+                        {"id": "color", "value": {"fixedColor": "#3274D9", "mode": "fixed"}}
+                    ]
+                }
+            ]
+        }
+    })
     y_pos += 8
 
     # ROW 5: Infrastructure
@@ -223,9 +264,51 @@ def create_dashboard():
         {"expr": "redis_memory_used_bytes", "legend": "Redis Memory", "color": "purple"}
     ], 0, 12, 9, "bytes", 80, False, "bars"))
 
-    panels.append(create_timeseries("Kafka Throughput", [
-        {"expr": "sum(rate(kafka_topic_partition_current_offset[1m]))", "legend": "Msgs In/sec", "color": "orange"}
-    ], 12, 12, 9, "none", 80, False, "line"))
+    panels.append({
+        "type": "timeseries",
+        "title": "Distributed Kafka Pipeline Activity",
+        "gridPos": {"h": 9, "w": 12, "x": 12, "y": y_pos},
+        "id": len(panels) + 1,
+        "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+        "targets": [
+            {"expr": "sum(rate(kafka_topic_partition_current_offset[10s]))", "legendFormat": "Messages Produced/sec", "refId": "A"},
+            {"expr": "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", "legendFormat": "Consumer Lag", "refId": "B"}
+        ],
+        "options": {
+            "legend": {"displayMode": "table", "placement": "bottom", "calcs": ["max", "lastNotNull"]},
+            "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+            "defaults": {
+                "custom": {
+                    "drawStyle": "bars",
+                    "lineWidth": 1,
+                    "fillOpacity": 80,
+                    "gradientMode": "opacity"
+                },
+                "color": {"mode": "palette-classic"}
+            },
+            "overrides": [
+                {
+                    "matcher": {"id": "byName", "options": "Consumer Lag"},
+                    "properties": [
+                        {"id": "custom.axisPlacement", "value": "right"},
+                        {"id": "custom.drawStyle", "value": "line"},
+                        {"id": "custom.lineWidth", "value": 4},
+                        {"id": "custom.lineInterpolation", "value": "linear"},
+                        {"id": "custom.fillOpacity", "value": 20},
+                        {"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}
+                    ]
+                },
+                {
+                    "matcher": {"id": "byName", "options": "Messages Produced/sec"},
+                    "properties": [
+                        {"id": "color", "value": {"fixedColor": "dark-orange", "mode": "fixed"}}
+                    ]
+                }
+            ]
+        }
+    })
     y_pos += 7
 
     with open(r"E:\NexPulse\infra\grafana\dashboards\overview.json", "w") as f:

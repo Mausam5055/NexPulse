@@ -773,7 +773,7 @@
     },
     {
       "type": "timeseries",
-      "title": "Aggregator Processing Rate & WebSockets",
+      "title": "Aggregator Telemetry & Client Subscriptions",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -787,68 +787,85 @@
       },
       "targets": [
         {
-          "expr": "rate(aggregator_events_processed_total[1m])",
-          "legendFormat": "Events Processed/sec",
+          "expr": "rate(aggregator_events_processed_total[10s])",
+          "legendFormat": "Processing Rate",
           "refId": "A"
         },
         {
           "expr": "query_websocket_connections_active",
-          "legendFormat": "WebSockets",
+          "legendFormat": "Active WebSockets",
           "refId": "B"
         }
       ],
       "options": {
         "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ]
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "none"
+          "mode": "multi"
         }
       },
       "fieldConfig": {
         "defaults": {
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 60,
-            "gradientMode": "opacity",
-            "lineInterpolation": "linear",
+            "lineInterpolation": "stepBefore",
             "lineWidth": 2,
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            }
+            "fillOpacity": 15,
+            "gradientMode": "hue",
+            "showPoints": "auto",
+            "pointSize": 4
           },
-          "unit": "none"
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "reqps"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Events Processed/sec"
+              "options": "Active WebSockets"
             },
             "properties": [
               {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "WebSockets"
-            },
-            "properties": [
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "smooth"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 10
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "opacity"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "blue",
+                  "fixedColor": "#3274D9",
                   "mode": "fixed"
                 }
               }
@@ -937,7 +954,7 @@
     },
     {
       "type": "timeseries",
-      "title": "Kafka Throughput",
+      "title": "Distributed Kafka Pipeline Activity",
       "gridPos": {
         "h": 9,
         "w": 12,
@@ -951,48 +968,87 @@
       },
       "targets": [
         {
-          "expr": "sum(rate(kafka_topic_partition_current_offset[1m]))",
-          "legendFormat": "Msgs In/sec",
+          "expr": "sum(rate(kafka_topic_partition_current_offset[10s]))",
+          "legendFormat": "Messages Produced/sec",
           "refId": "A"
+        },
+        {
+          "expr": "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})",
+          "legendFormat": "Consumer Lag",
+          "refId": "B"
         }
       ],
       "options": {
         "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "max",
+            "lastNotNull"
+          ]
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "none"
+          "mode": "multi"
         }
       },
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "drawStyle": "line",
+            "drawStyle": "bars",
+            "lineWidth": 1,
             "fillOpacity": 80,
-            "gradientMode": "opacity",
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            }
+            "gradientMode": "opacity"
           },
-          "unit": "none"
+          "color": {
+            "mode": "palette-classic"
+          }
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Msgs In/sec"
+              "options": "Consumer Lag"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 4
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Messages Produced/sec"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "dark-orange",
                   "mode": "fixed"
                 }
               }
