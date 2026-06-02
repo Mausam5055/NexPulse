@@ -159,23 +159,78 @@ def create_dashboard():
             }
         }
 
-    # ROW 1: KPIs
-    add_row("Overview KPIs")
-    panels.append(create_stat("Requests (Total)", "sum(rate(gateway_events_ingested_total[30s]))", 0, 4, "blue", "reqps"))
-    panels.append(create_stat("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 4, 4, "green", "percent"))
-    panels.append(create_stat("Active Connections", "gateway_active_connections", 8, 4, "purple"))
-    panels.append(create_stat("Kafka Lag", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 12, 4, "orange"))
-    panels.append(create_stat("WebSocket Clients", "query_websocket_connections_active", 16, 4, "dark-blue"))
-    panels.append(create_stat("Redis Memory", "redis_memory_used_bytes", 20, 4, "red", "bytes"))
-    y_pos += 4
+    # ROW 1: Overview & System Saturation
+    add_row("Overview & System Saturation")
+    
+    def create_minimal_stat(title, expr, x, color, unit="none"):
+        return {
+            "type": "stat",
+            "title": title,
+            "gridPos": {"h": 5, "w": 3, "x": x, "y": y_pos},
+            "id": len(panels) + 1,
+            "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+            "targets": [{"expr": expr, "refId": "A"}],
+            "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "reduceOptions": {"calcs": ["lastNotNull"]},
+                "textMode": "auto"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {"mode": "fixed", "fixedColor": color},
+                    "unit": unit
+                }
+            }
+        }
+        
+    def create_horiz_gauge(title, expr, x, color, unit="none", max_val=100, invert_colors=False):
+        steps = [
+            {"color": "green", "value": None}, 
+            {"color": "orange", "value": max_val * 0.7}, 
+            {"color": "red", "value": max_val * 0.9}
+        ]
+        if invert_colors:
+            steps = [
+                {"color": "red", "value": None}, 
+                {"color": "orange", "value": max_val * 0.1}, 
+                {"color": "green", "value": max_val * 0.3}
+            ]
+            
+        return {
+            "type": "gauge",
+            "title": title,
+            "gridPos": {"h": 5, "w": 3, "x": x, "y": y_pos},
+            "id": len(panels) + 1,
+            "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+            "targets": [{"expr": expr, "refId": "A"}],
+            "options": {
+                "reduceOptions": {"calcs": ["lastNotNull"], "values": False},
+                "orientation": "horizontal",
+                "showThresholdLabels": False,
+                "showThresholdMarkers": True
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {"mode": "thresholds"},
+                    "max": max_val,
+                    "min": 0,
+                    "thresholds": {"mode": "absolute", "steps": steps},
+                    "unit": unit
+                }
+            }
+        }
 
-    # ROW 2: Advanced Visualizations
-    add_row("System Saturation & Limits")
-    panels.append(create_gauge("Gateway Load Saturation", "gateway_active_connections / 1000 * 100", 0, 6, 6, "red", "percent"))
-    panels.append(create_bargauge("Kafka Backpressure", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 6, 6, 6, "orange", "none"))
-    panels.append(create_gauge("Memory Utilization", "redis_memory_used_bytes / (1024*1024*1024) * 100", 12, 6, 6, "green", "percent"))
-    panels.append(create_bargauge("WebSocket Saturation", "query_websocket_connections_active / 5000 * 100", 18, 6, 6, "blue", "percent"))
-    y_pos += 6
+    panels.append(create_minimal_stat("Requests", "sum(rate(gateway_events_ingested_total[30s]))", 0, "blue", "reqps"))
+    panels.append(create_minimal_stat("Errors", "sum(rate(gateway_events_rejected_total[30s]))", 3, "red", "reqps"))
+    panels.append(create_horiz_gauge("Gateway Load", "gateway_active_connections / 1000 * 100", 6, "red", "percent"))
+    panels.append(create_horiz_gauge("Kafka Backpr.", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 9, "orange", "none", 1000))
+    panels.append(create_horiz_gauge("Memory Util", "redis_memory_used_bytes / (1024*1024*1024) * 100", 12, "green", "percent"))
+    panels.append(create_horiz_gauge("WebSockets", "query_websocket_connections_active / 5000 * 100", 15, "blue", "percent"))
+    panels.append(create_horiz_gauge("Active Conn.", "gateway_active_connections / 1000 * 100", 18, "purple", "percent"))
+    panels.append(create_horiz_gauge("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 21, "green", "percent", 100, True))
+    y_pos += 5
 
     # ROW 2: HTTP Ingress
     add_row("HTTP Requests & Traffic")
