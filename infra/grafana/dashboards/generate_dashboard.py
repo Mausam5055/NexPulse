@@ -185,7 +185,44 @@ def create_dashboard():
             }
         }
         
-    def create_horiz_gauge(title, expr, x, color, unit="none", max_val=100, invert_colors=False):
+    def create_bar_box(title, expr, x, color, unit="none", max_val=100, invert_colors=False):
+        steps = [
+            {"color": "green", "value": None}, 
+            {"color": "orange", "value": max_val * 0.7}, 
+            {"color": "red", "value": max_val * 0.9}
+        ]
+        if invert_colors:
+            steps = [
+                {"color": "red", "value": None}, 
+                {"color": "orange", "value": max_val * 0.1}, 
+                {"color": "green", "value": max_val * 0.3}
+            ]
+            
+        return {
+            "type": "bargauge",
+            "title": title,
+            "gridPos": {"h": 5, "w": 3, "x": x, "y": y_pos},
+            "id": len(panels) + 1,
+            "datasource": {"type": "prometheus", "uid": "prometheus-nexpulse"},
+            "targets": [{"expr": expr, "refId": "A"}],
+            "options": {
+                "reduceOptions": {"calcs": ["lastNotNull"]},
+                "orientation": "horizontal",
+                "displayMode": "basic",
+                "showUnfilled": True
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {"mode": "thresholds"},
+                    "max": max_val,
+                    "min": 0,
+                    "thresholds": {"mode": "absolute", "steps": steps},
+                    "unit": unit
+                }
+            }
+        }
+        
+    def create_speedometer(title, expr, x, color, unit="none", max_val=100, invert_colors=False):
         steps = [
             {"color": "green", "value": None}, 
             {"color": "orange", "value": max_val * 0.7}, 
@@ -207,7 +244,7 @@ def create_dashboard():
             "targets": [{"expr": expr, "refId": "A"}],
             "options": {
                 "reduceOptions": {"calcs": ["lastNotNull"], "values": False},
-                "orientation": "horizontal",
+                "orientation": "auto",
                 "showThresholdLabels": False,
                 "showThresholdMarkers": True
             },
@@ -224,12 +261,12 @@ def create_dashboard():
 
     panels.append(create_minimal_stat("Requests", "sum(rate(gateway_events_ingested_total[30s]))", 0, "blue", "reqps"))
     panels.append(create_minimal_stat("Errors", "sum(rate(gateway_events_rejected_total[30s]))", 3, "red", "reqps"))
-    panels.append(create_horiz_gauge("Gateway Load", "gateway_active_connections / 1000 * 100", 6, "red", "percent"))
-    panels.append(create_horiz_gauge("Kafka Backpr.", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 9, "orange", "none", 1000))
-    panels.append(create_horiz_gauge("Memory Util", "redis_memory_used_bytes / (1024*1024*1024) * 100", 12, "green", "percent"))
-    panels.append(create_horiz_gauge("WebSockets", "query_websocket_connections_active / 5000 * 100", 15, "blue", "percent"))
-    panels.append(create_horiz_gauge("Active Conn.", "gateway_active_connections / 1000 * 100", 18, "purple", "percent"))
-    panels.append(create_horiz_gauge("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 21, "green", "percent", 100, True))
+    panels.append(create_speedometer("Gateway Load", "gateway_active_connections / 1000 * 100", 6, "red", "percent"))
+    panels.append(create_speedometer("Kafka Backpr.", "sum(kafka_consumergroup_lag{consumergroup=\"aggregator-group\"})", 9, "orange", "none", 1000))
+    panels.append(create_bar_box("Memory Util", "redis_memory_used_bytes / (1024*1024*1024) * 100", 12, "green", "percent"))
+    panels.append(create_bar_box("WebSockets", "query_websocket_connections_active / 5000 * 100", 15, "blue", "percent"))
+    panels.append(create_bar_box("Active Conn.", "gateway_active_connections / 1000 * 100", 18, "purple", "percent"))
+    panels.append(create_bar_box("Success Rate", "100 - (100 * sum(rate(gateway_events_rejected_total[30s])) / (sum(rate(gateway_events_ingested_total[30s])) + sum(rate(gateway_events_rejected_total[30s])) + 0.001))", 21, "green", "percent", 100, True))
     y_pos += 5
 
     # ROW 2: HTTP Ingress
