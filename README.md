@@ -23,15 +23,18 @@ NexPulse is a **production-grade, distributed real-time event analytics engine**
 
 NexPulse is highly modular, with concerns cleanly separated across specialized microservices.
 
-| Directory | Core Task & Responsibility |
-|-----------|----------------------------|
-| `services/gateway/` | The ingestion front-door (`POST /ingest`). Validates payloads, executes strict Redis sliding-window rate limiting, and queues events into Kafka. |
-| `services/aggregator/` | The high-speed analytics engine. Consumes Kafka streams and writes optimized aggregations (HyperLogLog, Sorted Sets) into Redis. |
-| `services/anomaly/` | A specialized background worker that monitors the event stream for statistical traffic spikes using Exponential Moving Averages (EMA). |
-| `services/query/` | Isolates read traffic. Maintains WebSocket connections and REST APIs to push live data to clients without straining the Aggregator. |
-| `tools/simulator/` | A heavy-duty traffic generator capable of blasting the Gateway with up to 100,000 events/sec to stress-test the architecture. |
-| `infra/` | Contains the `docker-compose.yml` and configurations for spinning up Kafka, Zookeeper, Redis, Prometheus, and Grafana. |
-| `infra/grafana/` | Stores the automated JSON provisioning scripts for our 6 highly-customized, real-time monitoring dashboards. |
+```text
+nexpulse/
+├── services/
+│   ├── gateway/       - The ingestion front-door (POST /ingest). Validates payloads, executes strict Redis sliding-window rate limiting, and queues events into Kafka.
+│   ├── aggregator/    - The high-speed analytics engine. Consumes Kafka streams and writes optimized aggregations (HyperLogLog, Sorted Sets) into Redis.
+│   ├── anomaly/       - A specialized background worker that monitors the event stream for statistical traffic spikes using Exponential Moving Averages (EMA).
+│   └── query/         - Isolates read traffic. Maintains WebSocket connections and REST APIs to push live data to clients without straining the Aggregator.
+├── tools/
+│   └── simulator/     - A heavy-duty traffic generator capable of blasting the Gateway with up to 100,000 events/sec to stress-test the architecture.
+└── infra/             - Contains the docker-compose.yml and configurations for spinning up Kafka, Zookeeper, Redis, Prometheus, and Grafana.
+    └── grafana/       - Stores the automated JSON provisioning scripts for our 6 highly-customized, real-time monitoring dashboards.
+```
 
 ---
 
@@ -162,3 +165,9 @@ When you run `make up`, Grafana is automatically provisioned with 6 breathtaking
 | `make clean` | Wipes all data volumes for a fresh reset. |
 | `make check` | Runs an automated health check against all API and infra endpoints. |
 | `make build` | Compiles all Go binaries into the `./bin/` directory. |
+
+<br>
+
+<div align="center">
+  <b>Developed by Mausam5055</b>
+</div>
