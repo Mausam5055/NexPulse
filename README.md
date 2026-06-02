@@ -19,6 +19,25 @@ NexPulse is a **production-grade, distributed real-time event analytics engine**
 
 ---
 
+## 📸 Previews
+
+<table>
+  <tr>
+    <td><img src="preview/DOcker1.png" alt="Docker Setup 1" /></td>
+    <td><img src="preview/docker2.png" alt="Docker Setup 2" /></td>
+  </tr>
+  <tr>
+    <td><img src="preview/grafnadashboard1.png" alt="Grafana Dashboard 1" /></td>
+    <td><img src="preview/grafnadashboard2.png" alt="Grafana Dashboard 2" /></td>
+  </tr>
+  <tr>
+    <td><img src="preview/grafnadashboard3.png" alt="Grafana Dashboard 3" /></td>
+    <td><img src="preview/grafnadashboard4.png" alt="Grafana Dashboard 4" /></td>
+  </tr>
+</table>
+
+---
+
 ## 📁 Project Structure & Organization
 
 NexPulse is highly modular, with concerns cleanly separated across specialized microservices.
@@ -173,23 +192,6 @@ When you run `make up`, Grafana is automatically provisioned with 6 breathtaking
 - **URL:** [http://localhost:3000](http://localhost:3000)
 - **Username:** `admin`
 - **Password:** `nexpulse`
-
----
-
-## 📸 Previews
-
-<table>
-  <tr>
-    <td><img src="preview/DOcker1.png" alt="Docker Setup 1" /></td>
-    <td><img src="preview/docker2.png" alt="Docker Setup 2" /></td>
-    <td><img src="preview/grafnadashboard1.png" alt="Grafana Dashboard 1" /></td>
-  </tr>
-  <tr>
-    <td><img src="preview/grafnadashboard2.png" alt="Grafana Dashboard 2" /></td>
-    <td><img src="preview/grafnadashboard3.png" alt="Grafana Dashboard 3" /></td>
-    <td><img src="preview/grafnadashboard4.png" alt="Grafana Dashboard 4" /></td>
-  </tr>
-</table>
 
 ---
 
