@@ -157,23 +157,28 @@ NexPulse is incredibly easy to run locally. You only need **Docker** and **Go 1.
 | `docker-compose -f infra/docker-compose.yml down -v` | Wipes all data and resets the environment. |
 
 ### 2. Start the Microservices
-Open **4 separate terminal windows** and run one of these commands in each:
+The easiest way to start all services on Windows is to run the included PowerShell script:
+```powershell
+.\start.ps1
+```
+
+If you prefer to run them manually, open **4 separate terminal windows** and run one of these commands in each:
 
 | Command | Service | Description |
 |---------|---------|-------------|
-| `cd services/gateway && go run .` | **Gateway** | Starts the ingestion API on `:8080`. |
-| `cd services/aggregator && go run .`| **Aggregator** | Consumes Kafka and computes live Redis metrics. |
-| `cd services/anomaly && go run .` | **Detector** | Hunts for statistical traffic spikes. |
-| `cd services/query && go run .` | **Query API** | Exposes WebSockets and REST APIs. |
+| `cd services/gateway; go run .` | **Gateway** | Starts the ingestion API on `:8080`. |
+| `cd services/aggregator; go run .`| **Aggregator** | Consumes Kafka and computes live Redis metrics. |
+| `cd services/anomaly; go run .` | **Detector** | Hunts for statistical traffic spikes. |
+| `cd services/query; go run .` | **Query API** | Exposes WebSockets and REST APIs. |
 
 ### 3. Unleash the Traffic Simulator
 Open one final terminal to generate synthetic traffic and watch the dashboards come alive!
 
 | Command | Load Level |
 |---------|------------|
-| `cd tools/simulator && go run . --rate 1000 --workers 20` | Normal traffic (~1,000 requests/sec). |
-| `cd tools/simulator && go run . --rate 10000 --workers 100` | Heavy traffic (~10,000 requests/sec). |
-| `cd tools/simulator && go run . --rate 50000 --workers 500` | **MAX POWER** (~50,000+ requests/sec). |
+| `cd tools/simulator; go run . --rate 1000 --workers 20` | Normal traffic (~1,000 requests/sec). |
+| `cd tools/simulator; go run . --rate 10000 --workers 100` | Heavy traffic (~10,000 requests/sec). |
+| `cd tools/simulator; go run . --rate 50000 --workers 500` | **MAX POWER** (~50,000+ requests/sec). |
 
 ### 4. View Live Analytics in PowerShell (Optional)
 If you want to feel like a true hacker, you can watch the Redis data aggregate in real-time straight from your terminal without opening Grafana. Run this infinite loop in PowerShell:

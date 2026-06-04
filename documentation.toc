@@ -1,0 +1,30 @@
+\contentsline {section}{\numberline {1}Executive Summary}{3}{section.1}%
+\contentsline {section}{\numberline {2}Motivation and Problem Statement}{3}{section.2}%
+\contentsline {section}{\numberline {3}Why Go (Golang) Over Node.js and Python}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}The Single-Threaded Bottleneck}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Go's Concurrency Model}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Compiled Performance}{4}{subsection.3.3}%
+\contentsline {section}{\numberline {4}System Architecture}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}API Gateway (Port 8080)}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Aggregator Service (Port 8082)}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Anomaly Detector (Port 8083)}{5}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Query Service (Port 8081)}{6}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Redis: The In-Memory Data Layer}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Sliding Window Rate Limiting with Sorted Sets}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Real-Time Leaderboards with Sorted Sets}{7}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Pub/Sub for Real-Time Notifications}{7}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Apache Kafka: The Distributed Event Backbone}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Why Kafka Instead of Direct Processing}{8}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Configuration for High Throughput}{8}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Kafka Exporter for Observability}{8}{subsection.6.3}%
+\contentsline {section}{\numberline {7}WebSocket Architecture for Real-Time Dashboards}{8}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Hub-and-Spoke Broadcast Pattern}{9}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Observability Stack: Prometheus and Grafana}{9}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Prometheus: The Metrics Collector}{9}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Grafana: The Visualization Layer}{10}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Docker: Infrastructure as Code}{10}{section.9}%
+\contentsline {section}{\numberline {10}Stress Testing and Resilience Validation}{11}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Simulator Capabilities}{11}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Observed Results}{11}{subsection.10.2}%
+\contentsline {section}{\numberline {11}Key Technical Decisions and Trade-Offs}{12}{section.11}%
+\contentsline {section}{\numberline {12}Conclusion and Future Scope}{12}{section.12}%

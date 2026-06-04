@@ -54,6 +54,11 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - nexpulse-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/commands/ruok || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # ─────────────────────────────────────────────────
   # Kafka
@@ -74,7 +79,8 @@ services:
       KAFKA_NUM_PARTITIONS: 6
       KAFKA_LOG_RETENTION_HOURS: 24
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     networks:
       - nexpulse-net
     healthcheck:
